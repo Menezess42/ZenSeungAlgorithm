@@ -1,5 +1,3 @@
-    
-    
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,12 +7,12 @@ Vector = List[int]
 Matrix = List[List[int]]
 
 def openImg(arqImg):
-    """function que abre uma img"""
+    """This function just opens a image file"""
     img = cv2.imread(arqImg)
     return img
 
 def luminancia(img):
-    """function que converte uma img em grayScale"""
+    """Converts a colorful image to a gray image"""
     rows,coluns,_ = img.shape
     img2 = np.zeros((img.shape[0],img.shape[1],1), dtype=np.uint8)
     for i in range(rows):
@@ -24,7 +22,7 @@ def luminancia(img):
 
 
 def blackandWhite(img):
-    """função para transformar uma img em preto e branco"""
+    """converts a gray maige to a back and white image"""
     rows, coluns,_ = img.shape
     for i in range(rows):
         for j in range(coluns): 
@@ -36,42 +34,53 @@ def blackandWhite(img):
 
 
 
-def zhang_suen_rule1(conjunto: Matrix) -> int:
-    
-    """confere a priemeira regra 1 do algoritmo zhang suen que define q só pode ocorrer uma conectividade no kn8"""
-    """[[y0x0,y0x1,y0x2]
-        [y1x0,pixe,y1x2]
-        [y2x0,y2x1,y2x2]]"""
-    conectividade=0
+def zhang_suen_rule1(pGroup: Matrix) -> int:
+    """[this function is the first rule of the zhang suen algorithm, the first rule says that the selected pixel must have only one connection]
+
+    Args:
+        pGroup (Matrix): [is the matrix of pixels selected, the middle pixel is the pixel it has been evaluated and the others is the neighbors]
+
+    Returns:
+        int: [the returns is a binary ansewer, if the first rule is obeyed the return is one if not the return is zero]
+    """
+    connectivity=0
     for y in range(3):
         for x in range(3):
             if y==1 and x==1:
                 continue
             else:
                 if x==0 or x==1 and y==0:
-                    if conjunto[y][x]!=conjunto[y][x+1]:
-                        conectividade+=1
+                    if pGroup[y][x]!=pGroup[y][x+1]:
+                        connectivity+=1
                 elif y==0 or y==1 and x==2:
-                    if conjunto[y][x]!=conjunto[y+1][x]:
-                        conectividade+=1
+                    if pGroup[y][x]!=pGroup[y+1][x]:
+                        connectivity+=1
                 elif x==1 or x==2 and y==2:
-                    if conjunto[y][x]!=conjunto[y][x-1]:
-                        conectividade+=1
+                    if pGroup[y][x]!=pGroup[y][x-1]:
+                        connectivity+=1
                 elif y==2 or y==1 and x==0:
-                    if conjunto[y][x]!=conjunto[y-1][x]:
-                        conectividade+=1
+                    if pGroup[y][x]!=pGroup[y-1][x]:
+                        connectivity+=1
                         
-    if conectividade == 1:
+    if connectivity == 1:
         return 1
     else:
         return 0
                
-def zhang_suen_rule2(conjunto: Matrix) -> int:
-    """confere a segunda regra 2 do algoritmo zhang_suen na qual fala q tem q ter 2 ou mais e 6 ou menos vizinhos pretos"""
+def zhang_suen_rule2(pGroup: Matrix) -> int:
+    """[this function is the second rule of the zhang suen algorithm, the second rule tells that the selected pixel must have two or more black neighbors and six
+        or less]
+
+    Args:
+        pGroup (Matrix): [is the matrix of pixels selected, the middle pixel is the pixel it has been evaluated and the others is the neighbors]
+
+    Returns:
+        int: [the returns is a binary ansewer, if the first rule is obeyed the return is one if not the return is zero]
+    """
     n_black=0
     for y in range(3):
         for x in range(3):
-            if conjunto[y][x]==0:
+            if pGroup[y][x]==0:
                 n_black+=1
     
     if n_black >=2 and n_black<=6:
@@ -79,42 +88,63 @@ def zhang_suen_rule2(conjunto: Matrix) -> int:
     else:
         return 0                    
     
-def zhang_suen_rule3(conjunto: Matrix,etapa: int) -> int:
-    """confere a regra 3 da iteração A ou B do algoritmo zhang_suen na qual define q pelomenos um dos pixeis a seguir tem q ser fundo(branco)"""
+def zhang_suen_rule3(pGroup: Matrix,etapa: int) -> int:
+    """[this function is the third rule of the zhang suen algorithm, the third rule tells that one of the following pixels hass to be white(background),
+        this function change the evaluated pixel depending on suen sub interaction]
+    Args:
+        pGroup (Matrix): [is the matrix of pixels selected, the middle pixel is the pixel it has been evaluated and the others is the neighbors]
+        etapa (int): [telss if the zhang suen is runing the first or the second interaction, the accepted values are zero or one, zero is the first interaction and one is the second interaction]
+    
+    Returns:
+        int: [the returns is a binary ansewer, if the first rule is obeyed the return is one if not the return is zero]
+    """
     if etapa == 0:
-        if conjunto[0][1]==255 or conjunto[1][0]==255 or conjunto[1][2]==255:
+        if pGroup[0][1]==255 or pGroup[1][0]==255 or pGroup[1][2]==255:
             return 1
         else:
             return 0
     if etapa == 1:
-        if conjunto[0][1]==255 or conjunto[1][2]==255 or conjunto[2][1]==255:
+        if pGroup[0][1]==255 or pGroup[1][2]==255 or pGroup[2][1]==255:
             return 1
         else:
             return 0       
 
-def zhang_suen_rule4(conjunto: Matrix,etapa: int) -> int:
-    """confere a regra 3 da iteração A ou B do algoritmo zhang_suen na qual define q pelomenos um dos pixeis a seguir tem q ser fundo(branco)"""
+def zhang_suen_rule4(pGroup: Matrix,etapa: int) -> int:
+    """[this function is the fourth rule of the zhang suen algorithm, the fourth rule tells that one of the following pixels hass to be white(background),
+        this function change the evaluated pixel depending on suen sub interaction]
+    Args:
+        pGroup (Matrix): [is the matrix of pixels selected, the middle pixel is the pixel it has been evaluated and the others is the neighbors]
+        etapa (int): [telss if the zhang suen is runing the first or the second interaction, the accepted values are zero or one, zero is the first interaction and one is the second interaction]
+    
+    Returns:
+        int: [the returns is a binary ansewer, if the first rule is obeyed the return is one if not the return is zero]
+    """
     if etapa == 0:
-        if conjunto[0][1]==255 or conjunto[1][0]==255 or conjunto[2][1]==255:
+        if pGroup[0][1]==255 or pGroup[1][0]==255 or pGroup[2][1]==255:
             return 1
         else:
             return 0
     if etapa == 1:
-        if conjunto[1][0]==255 or conjunto[1][2]==255 or conjunto[2][1]==255:
+        if pGroup[1][0]==255 or pGroup[1][2]==255 or pGroup[2][1]==255:
             return 1
         else:
             return 0
         
 def zhang_suen_exclude(img,y_list,x_list):
     """exclui todos os pixeis marcados para exclusão pela iteração do algoritmo zhang_suen(excluir significa pintar de branco(fundo))"""
+    """[recive an image and the two lists of coordinates Y and X, exclude the marked for exclude pixel by reading the coordinates x and y in the lists]
+
+    Returns:
+        img[matix]: [return the image file more thin]
+    """
     z = len(y_list)
     for i in range(z):
         img[y_list[i]][x_list[i]]=255
     return img
     
 def zhang_suen_thinging(img):
-    """algoritmo zhang_suen"""
-    iteracao = 0
+    """algorithm zhang_suen"""
+    interaction = 0
     matrix = [[255,255,255],
               [255,255,255],
               [255,255,255]]
@@ -136,20 +166,20 @@ def zhang_suen_thinging(img):
                     matrix[2][0]==img[y+1][x-1]
                     matrix[2][1]==img[y+1][x]
                     matrix[2][2]==img[y+1][x+1]
-                    mark_4_exclude = mark_4_exclude * zhang_suen_rule1(matrix) * zhang_suen_rule2(matrix) * zhang_suen_rule3(matrix,iteracao) * zhang_suen_rule4(matrix,iteracao)
+                    mark_4_exclude = mark_4_exclude * zhang_suen_rule1(matrix) * zhang_suen_rule2(matrix) * zhang_suen_rule3(matrix,interaction) * zhang_suen_rule4(matrix,interaction)
                     if mark_4_exclude==1:
                         y_list.append(y)
                         x_list.append(x)
         if y_list!=[]:
             img = zhang_suen_exclude(img,y_list,x_list)
         else:
-            if iteracao==1:
+            if interaction==1:
                 flag=0
         if flag!=0: 
-            if iteracao==0:
-                iteracao=1
+            if interaction==0:
+                interaction=1
             else:
-                iteracao=0       
+                interaction=0       
             matrix =[[255,255,255],
               [255,255,255],
               [255,255,255]]
